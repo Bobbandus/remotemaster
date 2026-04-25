@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RemoteMaster — App</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f5f6fa;
+  --white: #ffffff;
+  --border: #e4e7ec;
+  --blue: #4f6ef7;
+  --blue-dark: #3b5ae0;
+  --blue-light: #eef1fe;
+  --green: #22c55e;
+  --green-light: #ecfdf5;
+  --red: #ef4444;
+  --red-light: #fef2f2;
+  --yellow: #f59e0b;
+  --yellow-light: #fefce8;
+  --text: #1a1a2e;
+  --text2: #5a5b6a;
+  --text3: #9a9baa;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+/* ── LOGIN SCREEN ── */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.login-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  width: 380px;
+  max-width: 90vw;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+.login-logo .lb {
+  width: 30px;
+  height: 30px;
+  background: var(--blue);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-logo .lb svg { width: 16px; height: 16px; }
+
+.login-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.login-card .sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 24px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text2);
+}
+
+.field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field input:focus { border-color: var(--blue); }
+
+.login-error {
+  display: none;
+  font-size: 13px;
+  color: var(--red);
+  background: var(--red-light);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-primary { background: var(--blue); color: white; width: 100%; }
+.btn-primary:hover { background: var(--blue-dark); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.login-footer {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.login-footer a { color: var(--blue); text-decoration: none; }
+
+/* ── APP SHELL ── */
+.app { display: none; }
+.app.active { display: block; }
+
+nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo .lb {
+  width: 28px;
+  height: 28px;
+  background: var(--blue);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo .lb svg { width: 14px; height: 14px; }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.server-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--green);
+  background: var(--green-light);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.server-chip .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.user-menu:hover { background: var(--bg); }
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue-light);
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text3);
+  cursor: pointer;
+}
+
+.logout-btn:hover { color: var(--red); border-color: var(--red); }
+
+/* ── MAIN ── */
+main {
+  max-width: 640px;
+  margin: 36px auto;
+  padding: 0 20px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-label span {
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.device {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  box-shadow: var(--shadow);
+}
+
+.device:hover { border-color: var(--blue); box-shadow: 0 2px 8px rgba(79,110,247,0.1); }
+.device.offline { opacity: 0.5; cursor: not-allowed; }
+.device.offline:hover { border-color: var(--border); box-shadow: var(--shadow); }
+
+.device-left { display: flex; align-items: center; gap: 12px; }
+
+.d-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.d-icon.on { background: var(--blue-light); }
+.d-icon.on svg { stroke: var(--blue); }
+.d-icon.off { background: var(--red-light); }
+.d-icon.off svg { stroke: var(--red); }
+.d-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; }
+
+.d-name { font-size: 14px; font-weight: 600; }
+.d-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+.d-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.d-badge.online { background: var(--green-light); color: var(--green); }
+.d-badge.offline { background: var(--red-light); color: var(--red); }
+
+.add-btn {
+  width: 100%;
+  padding: 13px;
+  margin-top: 4px;
+  background: var(--white);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text3);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ── MODAL ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,46,0.3);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.overlay.active { display: flex; }
+
+.modal {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 36px;
+  width: 380px;
+  max-width: 90vw;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 16px;
+  border: 3px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.check-circle {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--green-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--green);
+}
+
+.modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.modal p { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+
+.btn-secondary {
+  padding: 8px 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-secondary:hover { background: var(--border); }
+
+/* ── REMOTE VIEW ── */
+.remote {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #1a1a2e;
+  display: none;
+  flex-direction: column;
+}
+
+.remote.active { display: flex; }
+
+.remote-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+
+.rb-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rb-left span { font-size: 14px; font-weight: 600; }
+
+.rb-chip {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.rb-chip.ping { background: var(--green-light); color: var(--green); }
+.rb-chip.res { background: var(--blue-light); color: var(--blue); }
+
+.rb-center {
+  display: flex;
+  gap: 4px;
+}
+
+.tool-btn {
+  padding: 6px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tool-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+.tool-btn.active {
+  background: var(--blue-light);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.btn-disconnect {
+  padding: 6px 14px;
+  background: var(--red-light);
+  border: none;
+  border-radius: 6px;
+  color: var(--red);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-disconnect:hover { background: #fde8e8; }
+
+.remote-body {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+
+.remote-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--text3);
+  font-size: 14px;
+}
+
+.remote-screen svg {
+  width: 48px;
+  height: 48px;
+  stroke: #3a3a5a;
+  fill: none;
+  stroke-width: 1.2;
+}
+
+/* ── SIDE PANELS ── */
+.side-panel {
+  width: 280px;
+  background: var(--white);
+  border-left: 1px solid var(--border);
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.side-panel.active { display: flex; }
+
+.sp-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sp-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--text3);
+  cursor: pointer;
+}
+
+.sp-body { padding: 16px; }
+
+.sp-body .drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sp-body .drop-zone:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-light);
+}
+
+.sp-body .drop-zone .icon { font-size: 24px; margin-bottom: 8px; }
+
+.sp-body .clip-box {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+}
+
+.sp-body .clip-box:focus { border-color: var(--blue); }
+
+.sp-body .clip-hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 8px;
+}
+
+.btn-small {
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  nav { padding: 12px 16px; }
+  main { margin: 24px auto; }
+  .side-panel { width: 100%; position: absolute; right: 0; top: 0; bottom: 0; z-index: 10; }
+  .rb-center { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ LOGIN ══════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="lb"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></div>
+      RemoteMaster
+    </div>
+    <h2>Sign in</h2>
+    <p class="sub">Connect to your relay server to get started.</p>
+    <div class="login-error" id="loginError">Could not connect to server. Check the address and try again.</div>
+    <div class="field">
+      <label>Server address</label>
+      <input type="text" id="serverInput" placeholder="e.g. 192.168.1.100 or my.server.com" value="">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="passInput" placeholder="Server password">
+    </div>
+    <button class="btn btn-primary" id="loginBtn" onclick="login()">Connect</button>
+    <div class="login-footer">
+      Don't have a server? <a href="index.html">Learn how to set up</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ APP ══════ -->
+<div class="app" id="app">
+  <nav>
+    <a class="logo" href="index.html">
+      <div class="lb"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></div>
+      RemoteMaster
+    </a>
+    <div class="nav-right">
+      <div class="server-chip"><div class="dot"></div> <span id="navServer">Connected</span></div>
+      <div class="user-menu" id="userMenu">
+        <div class="avatar" id="userAvatar">U</div>
+        <span id="userName">user</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">Sign out</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-title">Your devices</div>
+    <p class="page-sub">Click a device to start a remote session.</p>
+
+    <div class="section-label">
+      <span>Registered devices</span>
+      <span id="deviceCount">0 online</span>
+    </div>
+
+    <div id="list"></div>
+    <button class="add-btn" onclick="addDevice()">+ Add device</button>
+  </main>
+</div>
+
+<!-- ══════ CONNECT MODAL ══════ -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div id="mc">
+      <div class="spinner"></div>
+      <h3 id="mn">Connecting...</h3>
+      <p>Establishing a secure P2P connection</p>
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+    <div id="md" style="display:none">
+      <div class="check-circle">✓</div>
+      <h3>You're in!</h3>
+      <p id="mp">Latency: 8ms</p>
+      <button class="btn-secondary" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ REMOTE VIEW ══════ -->
+<div class="remote" id="rv">
+  <div class="remote-bar">
+    <div class="rb-left">
+      <span id="rn">—</span>
+      <span class="rb-chip ping" id="rp">8ms</span>
+      <span class="rb-chip res">1080p</span>
+    </div>
+    <div class="rb-center">
+      <button class="tool-btn" onclick="togglePanel('files')" id="tbFiles">📁 Files</button>
+      <button class="tool-btn" onclick="togglePanel('clip')" id="tbClip">📋 Clipboard</button>
+      <button class="tool-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    </div>
+    <button class="btn-disconnect" onclick="disconnect()">Disconnect</button>
+  </div>
+  <div class="remote-body">
+    <div class="remote-screen" id="remoteScreen">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg>
+      Waiting for video stream...
+    </div>
+
+    <!-- File Transfer Panel -->
+    <div class="side-panel" id="panelFiles">
+      <div class="sp-header">
+        File Transfer
+        <button class="sp-close" onclick="togglePanel('files')">✕</button>
+      </div>
+      <div class="sp-body">
+        <div class="drop-zone" onclick="fakeUpload()">
+          <div class="icon">📂</div>
+          Drop files here or click to browse
+        </div>
+        <div id="fileList" style="margin-top:14px;font-size:13px;color:var(--text3)"></div>
+      </div>
+    </div>
+
+    <!-- Clipboard Panel -->
+    <div class="side-panel" id="panelClip">
+      <div class="sp-header">
+        Clipboard Sync
+        <button class="sp-close" onclick="togglePanel('clip')">✕</button>
+      </div>
+      <div class="sp-body">
+        <textarea class="clip-box" id="clipBox" placeholder="Paste text here to send to the remote device..."></textarea>
+        <p class="clip-hint">Text syncs automatically when you paste.</p>
+        <button class="btn btn-primary btn-small" onclick="syncClip()">Send to remote</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── STATE ── */
+let devices = [];
+let serverAddr = '';
+
+/* ── API HELPERS (stubs — replace with real fetch calls) ── */
+const API = {
+  async login(server, password) {
+    // POST /api/auth/login
+    await delay(1200);
+    if (!server) throw new Error('No server');
+    return { user: 'user', token: 'xxx' };
+  },
+  async getDevices(server) {
+    // GET /api/devices
+    await delay(400);
+    return [
+      { id: 1, name: 'Desktop',  os: 'Windows 11', online: true,  ping: 8 },
+      { id: 2, name: 'Laptop',   os: 'Windows 11', online: true,  ping: 14 },
+      { id: 3, name: 'Server',   os: 'Ubuntu 22',  online: false, ping: 0 },
+    ];
+  },
+  async connect(server, deviceId) {
+    // POST /api/connect — returns WebRTC offer
+    await delay(1800);
+    return { sdp: '...', ping: 8 };
+  },
+  async registerDevice(server, name) {
+    // POST /api/devices/register
+    await delay(500);
+    return { id: Date.now(), name, os: 'Unknown', online: true, ping: Math.floor(Math.random()*20)+5 };
+  }
+};
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ── LOGIN ── */
+async function login() {
+  const server = document.getElementById('serverInput').value.trim();
+  const pass = document.getElementById('passInput').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginError');
+
+  if (!server) { err.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Connecting...';
+  err.style.display = 'none';
+
+  try {
+    const res = await API.login(server, pass);
+    serverAddr = server;
+    document.getElementById('navServer').textContent = server;
+    document.getElementById('userName').textContent = res.user;
+    document.getElementById('userAvatar').textContent = res.user[0].toUpperCase();
+
+    devices = await API.getDevices(server);
+    render();
+
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').classList.add('active');
+  } catch (e) {
+    err.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Connect';
+}
+
+function logout() {
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('passInput').value = '';
+  devices = [];
+}
+
+/* ── DEVICES ── */
+function render() {
+  const onlineCount = devices.filter(d => d.online).length;
+  document.getElementById('deviceCount').textContent = onlineCount + ' online';
+
+  const svg = `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg>`;
+
+  document.getElementById('list').innerHTML = devices.map((d, i) => `
+    <div class="device ${d.online?'':'offline'}" onclick="connectDevice(${i})">
+      <div class="device-left">
+        <div class="d-icon ${d.online?'on':'off'}">${svg}</div>
+        <div>
+          <div class="d-name">${d.name}</div>
+          <div class="d-sub">${d.os}</div>
+        </div>
+      </div>
+      <span class="d-badge ${d.online?'online':'offline'}">${d.online?'Online':'Offline'}</span>
+    </div>`).join('');
+}
+
+async function connectDevice(i) {
+  const d = devices[i];
+  if (!d.online) return;
+
+  document.getElementById('mc').style.display = 'block';
+  document.getElementById('md').style.display = 'none';
+  document.getElementById('mn').textContent = 'Connecting to ' + d.name + '...';
+  document.getElementById('overlay').classList.add('active');
+
+  try {
+    const res = await API.connect(serverAddr, d.id);
+    document.getElementById('mc').style.display = 'none';
+    document.getElementById('md').style.display = 'block';
+    document.getElementById('mp').textContent = 'Latency: ' + d.ping + 'ms';
+
+    await delay(1000);
+    closeModal();
+    document.getElementById('rn').textContent = d.name;
+    document.getElementById('rp').textContent = d.ping + 'ms';
+    document.getElementById('rv').classList.add('active');
+  } catch (e) {
+    closeModal();
+  }
+}
+
+async function addDevice() {
+  const name = prompt('Device name:');
+  if (!name) return;
+  const d = await API.registerDevice(serverAddr, name);
+  devices.push(d);
+  render();
+}
+
+function closeModal() { document.getElementById('overlay').classList.remove('active'); }
+
+/* ── REMOTE ── */
+function disconnect() {
+  document.getElementById('rv').classList.remove('active');
+  closePanels();
+}
+
+function toggleFullscreen() {
+  const rv = document.getElementById('rv');
+  if (!document.fullscreenElement) rv.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+/* ── SIDE PANELS ── */
+function togglePanel(id) {
+  const panels = { files: 'panelFiles', clip: 'panelClip' };
+  const btns = { files: 'tbFiles', clip: 'tbClip' };
+  const panel = document.getElementById(panels[id]);
+  const isOpen = panel.classList.contains('active');
+
+  closePanels();
+  if (!isOpen) {
+    panel.classList.add('active');
+    document.getElementById(btns[id]).classList.add('active');
+  }
+}
+
+function closePanels() {
+  document.querySelectorAll('.side-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+}
+
+function fakeUpload() {
+  const fl = document.getElementById('fileList');
+  const fakes = ['document.pdf', 'photo.jpg', 'notes.txt'];
+  const f = fakes[Math.floor(Math.random()*fakes.length)];
+  const size = (Math.random()*5+0.1).toFixed(1);
+  fl.innerHTML += `<div style="padding:8px 0;border-bottom:1px solid var(--border)">📄 ${f} <span style="float:right">${size} MB ✓</span></div>`;
+}
+
+function syncClip() {
+  const box = document.getElementById('clipBox');
+  if (box.value) {
+    alert('Clipboard synced to remote device!');
+    box.value = '';
+  }
+}
+
+/* Enter key on login */
+document.getElementById('passInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+document.getElementById('serverInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>
